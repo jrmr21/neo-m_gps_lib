@@ -27,7 +27,6 @@ void gps_loop()
       // end trame
       uint8_t type = buffer[3] + buffer[4] + buffer[5];
 
-
       switch (type)
       {
         case 207:   // GGA
@@ -48,11 +47,7 @@ void gps_loop()
               high_bit  += 2;
               low_bit   += 2;
             }
-
-            //Serial.println(GP_GGA_t.time[2]);
           }
-          
-          
             // *************  end get time *************
 
           break;
@@ -79,7 +74,6 @@ void gps_loop()
             
 
 
-
             // get degreeses data, min max -180 to 180
             cursor = get_cursor(buffer, GLL_START_LONGITUDE);
             GP_GLL_t.longitude_deg = (((buffer[cursor]-48) * 100) + ((buffer[cursor + 1]-48) * 10) +
@@ -101,7 +95,7 @@ void gps_loop()
           
           break;
 
-        case 219:   // GSA
+/*      case 219:   // GSA
           GP_GSA_t.update = 1;
           break;
 
@@ -116,9 +110,7 @@ void gps_loop()
         case 226:   // RMC
           GP_RMC_t.update = 1;
           break;
-
-        default:
-          break;
+*/
       }
 
       for (i; i > 0; i--)  // clear buffer
