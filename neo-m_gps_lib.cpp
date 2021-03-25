@@ -15,7 +15,7 @@ void gps_loop()
   while (gpsSerial.available() > 0)
   {
     uint8_t tmp = gpsSerial.read();
-    Serial.write(tmp);
+    //Serial.write(tmp);
 
     if (tmp != '\n')
     {

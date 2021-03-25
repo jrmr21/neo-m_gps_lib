@@ -1,12 +1,26 @@
 #ifndef NEO6M_LIB_H_
 #define NEO6M_LIB_H_
 
-#include <SoftwareSerial.h>
+
 #include <Arduino.h>
 
-// Choose two Arduino pins to use for software serial
-#define RXPin  2
-#define TXPin  3
+#if defined(__AVR_ATmega8__)
+
+    #include <SoftwareSerial.h>
+    // Choose two Arduino pins to use for software serial
+    #define RXPin  2
+    #define TXPin  3
+
+    // Create a software serial port called "gpsSerial"
+    static SoftwareSerial gpsSerial(RXPin, TXPin);
+
+#else
+
+    // Create a software serial port called "gpsSerial"
+    static Uart gpsSerial = Serial;
+
+#endif
+
 
 
 // GPS mode :
@@ -90,9 +104,6 @@ static struct GP_RMC
     /* data */
 }GP_RMC_t;
 
-// Create a software serial port called "gpsSerial"
-static SoftwareSerial gpsSerial(RXPin, TXPin);
-
 void gps_init();
 void gps_loop();
 
@@ -101,4 +112,5 @@ uint8_t get_cursor(uint8_t *ptr, uint8_t count);
 
 // refer p 186 on/of mode in UBLOX doc
 void    setupGPSpower(uint8_t mode);
+
 #endif
