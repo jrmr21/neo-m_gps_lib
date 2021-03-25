@@ -4,7 +4,7 @@
 
 #include <Arduino.h>
 
-#if defined(__AVR_ATmega8__)
+#if defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__)
 
     #include <SoftwareSerial.h>
     // Choose two Arduino pins to use for software serial
