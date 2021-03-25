@@ -8,6 +8,11 @@
 #define RXPin  2
 #define TXPin  3
 
+
+// GPS mode :
+#define GPS_MODE_ON  1
+#define GPS_MODE_OFF 0
+
 //Default baud of NEO-6M is 9600
 #define GPSBaud 9600
 
@@ -91,6 +96,9 @@ static SoftwareSerial gpsSerial(RXPin, TXPin);
 void gps_init();
 void gps_loop();
 
+    // func to get position in GPS trame
 uint8_t get_cursor(uint8_t *ptr, uint8_t count);
 
+// refer p 186 on/of mode in UBLOX doc
+void    setupGPSpower(uint8_t mode);
 #endif

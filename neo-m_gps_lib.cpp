@@ -4,6 +4,7 @@ void gps_init()
 {
     // Start the software serial port at the GPS's default baud
     gpsSerial.begin(GPSBaud);
+    delay(100);
 }
 
 void gps_loop()
@@ -14,7 +15,7 @@ void gps_loop()
   while (gpsSerial.available() > 0)
   {
     uint8_t tmp = gpsSerial.read();
-    //Serial.write(tmp);
+    Serial.write(tmp);
 
     if (tmp != '\n')
     {
@@ -123,8 +124,6 @@ void gps_loop()
       for (i; i > 0; i--)  // clear buffer
         buffer[i] = 0;
     }
-    
-    //Serial.write(temp[0]);
   }
 }
 
@@ -137,4 +136,21 @@ uint8_t get_cursor(uint8_t *ptr, uint8_t count)
       i++;
 
   return (cursor);
+}
+
+void setupGPSpower(uint8_t mode)
+{
+  if (mode == GPS_MODE_ON)
+  {
+    uint8_t setGPS_ON[]   =  {0xB5, 0x62, 0x06, 0x04, 0x04, 0x00, 0x00, 0x00,0x09, 0x00, 0x17, 0x76};
+
+    gpsSerial.write(setGPS_ON, sizeof(setGPS_ON)/sizeof(uint8_t));
+  }
+  else if (mode == GPS_MODE_OFF)
+  {
+    uint8_t setGPS_OFF[]  = {0xB5, 0x62, 0x06, 0x04, 0x04, 0x00, 0x00, 0x00,0x08, 0x00, 0x16, 0x74}; 
+
+    gpsSerial.write(setGPS_OFF , sizeof(setGPS_OFF)/sizeof(uint8_t));
+  }
+  
 }
