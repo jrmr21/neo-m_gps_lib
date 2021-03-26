@@ -41,7 +41,7 @@
 #define GLL_AVAILIDABLE_DATA            5
 //  add other GLL define..
 
-
+static uint8_t gps_status;
 
 /*
 '$' suivi par un groupe de 2 lettres pour l'identifiant du récepteur. (Non limitatif):
@@ -69,14 +69,15 @@ static struct GP_GLL
 {
     uint8_t update = 0;
 
-    int8_t  latitude_deg = 0;
-    float   latitude_min = 0;
-    uint8_t latitude_direction = 0;
+    int8_t  latitude_deg        = 0;     // latitude value
+    float   latitude_min        = 0;     // time 
+    uint8_t latitude_direction  = 0;     // orientation (N,S,W,e)
 
-    int8_t  longitude_deg = 0;
-    float   longitude_min = 0;
+    int8_t  longitude_deg       = 0;
+    float   longitude_min       = 0;
     uint8_t longitude_direction = 0;
 
+    char    str_frame[30]       = {0};
     /* data */
 }GP_GLL_t;
 
@@ -107,10 +108,14 @@ static struct GP_RMC
 void gps_init();
 void gps_loop();
 
-    // func to get position in GPS trame
-uint8_t get_cursor(uint8_t *ptr, uint8_t count);
-
 // refer p 186 on/of mode in UBLOX doc
 void    setupGPSpower(uint8_t mode);
+
+    // func to get position in GPS trame
+uint8_t get_cursor(uint8_t *ptr, uint8_t count);
+uint8_t get_gps_status();
+uint8_t get_GLL_struct(GP_GLL *gll_data);
+uint8_t get_GLL_str(char *str);
+
 
 #endif

@@ -4,11 +4,17 @@ void gps_init()
 {
     // Start the software serial port at the GPS's default baud
     gpsSerial.begin(GPSBaud);
-    delay(100);
+    delay(30);
+    setupGPSpower(GPS_MODE_ON);
+    delay(30);
 }
 
 void gps_loop()
 {
+    // if GPS is power OFF, stop func
+  if (!get_gps_status())
+    return ;
+
   static uint8_t  buffer[82];
   static uint8_t  i  = 0;
     // Displays information when new sentence is available.
@@ -88,11 +94,20 @@ void gps_loop()
             cursor = get_cursor(buffer, GLL_START_LONGITUDE_DIRECTION);
             GP_GLL_t.longitude_direction = buffer[cursor];
            
-            //Serial.write( GP_GLL_t.longitude_direction);
-          }
+            // get str trame
+            uint8_t start_cursor  = get_cursor(buffer, GLL_START_LATITUDE);
+            uint8_t end_cursor    = get_cursor(buffer, GLL_START_LONGITUDE_DIRECTION);
+            
+            {
+              uint8_t i = 0;
 
-          //Serial.write( buffer[GLL_AVAILIDABLE_DATA]);
-          
+              for (start_cursor; start_cursor <= end_cursor; start_cursor++)
+              {
+                GP_GLL_t.str_frame[i] = buffer[start_cursor];
+                i++;
+              }
+            }
+          }
           break;
 
 /*      case 219:   // GSA
@@ -132,9 +147,11 @@ uint8_t get_cursor(uint8_t *ptr, uint8_t count)
 
 void setupGPSpower(uint8_t mode)
 {
-  if (mode == GPS_MODE_ON)
+  if (mode  == GPS_MODE_ON)
   {
     uint8_t setGPS_ON[]   =  {0xB5, 0x62, 0x06, 0x04, 0x04, 0x00, 0x00, 0x00,0x09, 0x00, 0x17, 0x76};
+    
+    gps_status =  true;
 
     gpsSerial.write(setGPS_ON, sizeof(setGPS_ON)/sizeof(uint8_t));
   }
@@ -142,7 +159,52 @@ void setupGPSpower(uint8_t mode)
   {
     uint8_t setGPS_OFF[]  = {0xB5, 0x62, 0x06, 0x04, 0x04, 0x00, 0x00, 0x00,0x08, 0x00, 0x16, 0x74}; 
 
+    gps_status =  false;
+
     gpsSerial.write(setGPS_OFF , sizeof(setGPS_OFF)/sizeof(uint8_t));
   }
   
+}
+
+uint8_t get_gps_status()
+{
+  return (gps_status);
+}
+
+uint8_t get_GLL_struct(GP_GLL *gll_data)
+{
+  gll_data->latitude_deg  = GP_GLL_t.latitude_deg;
+  gll_data->longitude_deg = GP_GLL_t.longitude_deg;
+
+  gll_data->latitude_min  = GP_GLL_t.latitude_min;
+  gll_data->longitude_min = GP_GLL_t.longitude_min;
+
+  gll_data->latitude_direction  = GP_GLL_t.latitude_direction;
+  gll_data->longitude_direction = GP_GLL_t.longitude_direction;
+
+  // get str data frame
+  for (uint8_t i = 0; i < 30; i++)
+    gll_data->str_frame[i] = GP_GLL_t.str_frame[i];
+
+  if (GP_GLL_t.update) // if we read new value
+  {
+    GP_GLL_t.update = 0;
+    return (1);
+  } 
+  
+  return (0);
+}
+
+uint8_t get_GLL_str(char *str)
+{
+  for (uint8_t i = 0; i < 30; i++)
+    str[i] = GP_GLL_t.str_frame[i];
+
+  if (GP_GLL_t.update) // if we read new value
+  {
+    GP_GLL_t.update = 0;
+    return (1);
+  } 
+  
+  return (0);
 }
