@@ -24,19 +24,12 @@
 
 
 // GPS mode :
-#define GPS_MODE_ON  1
-#define GPS_MODE_OFF 0
-/*  TODO : explore all config
+#define GPS_MODE_ON     1
+#define GPS_MODE_OFF    0
 
-Max Performance Mode (default)
-0xB5, 0x62, 0x06, 0x11, 0x02, 0x00, 0x08, 0x00, 0x21, 0x91
-
-Power Save Mode
-0xB5, 0x62, 0x06, 0x11, 0x02, 0x00, 0x08, 0x01, 0x22, 0x92
-
-Eco Mode Don't want this one but here for reference.
-0xB5, 0x62, 0x06, 0x11, 0x02, 0x00, 0x08, 0x04, 0x25, 0x95 
-*/
+#define GPS_MAX_PERF    0
+#define GPS_SAVE_PERF   1
+#define GPS_ECO_PERF    2
 
 //Default baud of NEO-6M is 9600
 #define GPSBaud 9600
@@ -52,7 +45,14 @@ Eco Mode Don't want this one but here for reference.
 #define GLL_AVAILIDABLE_DATA            5
 //  add other GLL define..
 
-static uint8_t gps_status;
+#define GRMC_AVAILIDABLE_DATA            1
+#define GRMC_START_LATITUDE              2
+#define GRMC_START_LATITUDE_DIRECTION    3
+#define GRMC_START_LONGITUDE             4
+#define GRMC_START_LONGITUDE_DIRECTION   5
+//  add other GRMC define..
+
+static uint8_t gps_status = 1;
 
 /*
 '$' suivi par un groupe de 2 lettres pour l'identifiant du récepteur. (Non limitatif):
@@ -113,6 +113,16 @@ static struct GP_VTG
 static struct GP_RMC
 {
     uint8_t update = 0;
+
+    int8_t  latitude_deg        = 0;     // latitude value
+    float   latitude_min        = 0;     // time 
+    uint8_t latitude_direction  = 0;     // orientation (N,S,W,e)
+
+    int8_t  longitude_deg       = 0;
+    float   longitude_min       = 0;
+    uint8_t longitude_direction = 0;
+
+    char    str_frame[30]       = {0};
     /* data */
 }GP_RMC_t;
 
@@ -121,12 +131,15 @@ void gps_loop();
 
 // refer p 186 on/of mode in UBLOX doc
 void    setupGPSpower(uint8_t mode);
+void    setupGPSmode(uint8_t mode);
 
     // func to get position in GPS trame
 uint8_t get_cursor(uint8_t *ptr, uint8_t count);
 uint8_t get_gps_status();
 uint8_t get_GLL_struct(GP_GLL *gll_data);
 uint8_t get_GLL_str(char *str);
+uint8_t get_GRMC_struct(GP_RMC *gll_data);
+uint8_t get_GRMC_str(char *str);
 
 
 #endif
