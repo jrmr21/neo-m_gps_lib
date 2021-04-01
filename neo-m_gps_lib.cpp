@@ -19,9 +19,9 @@ void gps_loop()
   static uint8_t  buffer[82];
   static uint8_t  i  = 0;
     // Displays information when new sentence is available.
-  while (Serial.available() > 0)
+  while (gpsSerial.available() > 0)
   {
-    uint8_t tmp = Serial.read();
+    uint8_t tmp = gpsSerial.read();
     //Serial.write(tmp);
 
     if (tmp != '\n')
