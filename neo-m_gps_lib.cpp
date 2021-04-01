@@ -4,6 +4,8 @@ void gps_init()
 {
     // Start the software serial port at the GPS's default baud
     gpsSerial.begin(GPSBaud);
+    //Serial.begin(GPSBaud);
+
     setupGPSmode(GPS_ECO_PERF);
     //setupGPSpower(GPS_MODE_ON);
 }
@@ -17,9 +19,9 @@ void gps_loop()
   static uint8_t  buffer[82];
   static uint8_t  i  = 0;
     // Displays information when new sentence is available.
-  while (gpsSerial.available() > 0)
+  while (Serial.available() > 0)
   {
-    uint8_t tmp = gpsSerial.read();
+    uint8_t tmp = Serial.read();
     //Serial.write(tmp);
 
     if (tmp != '\n')

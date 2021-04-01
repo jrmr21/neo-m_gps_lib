@@ -17,8 +17,8 @@
 #else
 
     // Create a software serial port called "gpsSerial"
-    static Uart gpsSerial = Serial;
-
+    //static Uart gpsSerial = Serial;
+    #define gpsSerial Serial
 #endif
 
 
